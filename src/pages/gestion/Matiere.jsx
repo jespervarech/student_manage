@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import Header from './Header';
 
 const Matiere = () => {
   const [matieres, setMatieres] = useState([]);
@@ -55,7 +54,6 @@ const Matiere = () => {
 
   return (
     <div>
-      <Header />
       <div className="p-4">
         <form ref={formRef} onSubmit={handleSubmit} className="mb-4">
           <TextField

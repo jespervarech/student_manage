@@ -111,7 +111,7 @@ const Grade = () => {
         setLoading(true);
 
         try {
-            const url = editingGrade 
+            const url = editingGrade
                 ? `http://localhost:8010/api/grades/${editingGrade._id}`
                 : "http://localhost:8010/api/grades";
 
@@ -124,7 +124,7 @@ const Grade = () => {
             });
 
             if (!response.ok) throw new Error();
-            
+
             await fetchGrades();
             setFormValues({
                 student: "",
@@ -144,7 +144,7 @@ const Grade = () => {
     // Suppression d'un grade
     const handleDelete = async (id) => {
         if (!window.confirm("Êtes-vous sûr de vouloir supprimer ?")) return;
-        
+
         setLoading(true);
         try {
             const response = await fetch(`http://localhost:8010/api/grades/${id}`, {
@@ -172,11 +172,11 @@ const Grade = () => {
     return (
         <div style={{ padding: "20px", backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
             {/* Barre de recherche et bouton d'ajout */}
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                marginBottom: "20px" 
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: "20px"
             }}>
                 {/* Bouton d'ajout */}
                 <Button
@@ -184,9 +184,9 @@ const Grade = () => {
                     color="primary"
                     startIcon={<AddCircleIcon />}
                     onClick={() => setIsFormOpen(!isFormOpen)}
-                    style={{ 
-                        borderRadius: "12px", 
-                        padding: "10px 16px" 
+                    style={{
+                        borderRadius: "12px",
+                        padding: "10px 16px"
                     }}
                 >
                     {isFormOpen ? "Fermer" : "Ajouter"}
@@ -256,7 +256,7 @@ const Grade = () => {
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Button 
+                                    <Button
                                         type="submit"
                                         variant="contained"
                                         color="primary"
@@ -309,7 +309,7 @@ const Grade = () => {
                                     <TableCell>{grade.grade || "N/A"}</TableCell>
                                     <TableCell>{new Date(grade.date).toLocaleDateString() || "N/A"}</TableCell>
                                     <TableCell>
-                                        <IconButton 
+                                        <IconButton
                                             onClick={() => {
                                                 setEditingGrade(grade);
                                                 setIsFormOpen(true);
@@ -318,7 +318,7 @@ const Grade = () => {
                                         >
                                             <EditIcon />
                                         </IconButton>
-                                        <IconButton 
+                                        <IconButton
                                             onClick={() => handleDelete(grade._id)}
                                             disabled={loading}
                                         >
@@ -344,9 +344,9 @@ const Grade = () => {
 
             {/* Notification d'erreur */}
             {error && (
-                <Snackbar 
-                    open={!!error} 
-                    autoHideDuration={6000} 
+                <Snackbar
+                    open={!!error}
+                    autoHideDuration={6000}
                     onClose={() => setError(null)}
                 >
                     <Alert severity="error" onClose={() => setError(null)}>

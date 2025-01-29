@@ -1,0 +1,103 @@
+/* Fond de la page */
+.home-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #f0f4f8, #e6f1f7);
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    padding: 20px;
+    /* Un petit padding pour éviter que le contenu soit trop collé aux bords */
+}
+
+/* Contenu centré avec une légère ombre */
+.content {
+    text-align: center;
+    background: white;
+    padding: 50px;
+    /* Augmentation de l'espace autour du contenu */
+    border-radius: 12px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    max-width: 600px;
+    /* Augmentation de la largeur du conteneur */
+    width: 90%;
+    /* Utilisation d'un pourcentage pour s'adapter aux petits écrans */
+}
+
+/* Effet de survol sur le contenu */
+.content:hover {
+    box-shadow: 0px 12px 36px rgba(0, 0, 0, 0.2);
+    transform: translateY(-10px);
+}
+
+/* Logo Emsi */
+.logo {
+    max-width: 250px;
+    /* Ajuste la taille du logo */
+    margin-bottom: 25px;
+    transition: transform 0.3s ease;
+}
+
+/* Effet au survol du logo */
+.logo:hover {
+    transform: scale(1.1);
+}
+
+/* Texte principal */
+.title {
+    font-size: 38px;
+    /* Augmenter la taille du titre */
+    font-weight: 600;
+    color: #2c3e50;
+    margin-top: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap;
+    /* Empêche le texte de se diviser en plusieurs lignes */
+    overflow: hidden;
+    /* Cache le texte qui déborde si nécessaire */
+    text-overflow: ellipsis;
+    /* Ajoute une ellipse "..." si le texte est trop long */
+}
+
+/* Texte secondaire */
+.subtitle {
+    font-size: 20px;
+    /* Augmenter légèrement la taille du sous-titre */
+    color: #7f8c8d;
+    margin-bottom: 35px;
+    font-family: 'Lora', serif;
+    font-style: italic;
+}
+
+/* Bouton de connexion */
+.login-button {
+    background-color: #3498db;
+    /* Couleur bleue élégante */
+    color: white;
+    font-size: 20px;
+    /* Augmenter légèrement la taille du texte */
+    padding: 14px 40px;
+    /* Augmenter les marges du bouton */
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* Effet au survol du bouton */
+.login-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 28px rgba(0, 0, 0, 0.15);
+}
+
+.login-button:focus {
+    outline: none;
+}

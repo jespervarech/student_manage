@@ -23,9 +23,14 @@ import {
     Settings as SettingsIcon,
 } from "@mui/icons-material";
 
+import { useUserContext } from "../context/UserContext"; // Import du contexte utilisateur
+
 const Navbar = () => {
     const [anchorEl, setAnchorEl] = useState(null); // Pour le menu du profil
     const location = useLocation(); // Récupère l'emplacement actuel
+    // Ajouter un état pour vérifier si l'utilisateur est connecté
+    const [isLoggedIn, setIsLoggedIn] = useState(true); // Remplacer par la logique de connexion réelle
+    const { user } = useUserContext();
 
     // Gestion du menu du profil
     const handleMenuOpen = (event) => {
@@ -64,60 +69,42 @@ const Navbar = () => {
 
                 {/* Icônes et actions */}
                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    {/* Langue */}
-                    <IconButton color="inherit">
-                        <LanguageIcon />
-                    </IconButton>
-
-                    {/* Plein écran */}
-                    <IconButton color="inherit">
-                        <FullscreenExitIcon />
-                    </IconButton>
-
-                    {/* Notifications */}
-                    <IconButton color="inherit">
-                        <Badge badgeContent={1} color="error">
-                            <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
-
-                    {/* Messages */}
-                    <IconButton color="inherit">
-                        <Badge badgeContent={2} color="error">
-                            <ChatIcon />
-                        </Badge>
-                    </IconButton>
 
                     {/* Menu du profil */}
-                    <IconButton onClick={handleMenuOpen} color="inherit">
-                        <Avatar
-                            src="https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-                            alt="Profile"
-                            style={{ width: "32px", height: "32px" }}
-                        />
-                    </IconButton>
+                    {user && (
+                        <>
+                            {/* Menu du profil */}
+                            <IconButton onClick={handleMenuOpen} color="inherit">
+                                <Avatar
+                                    src={user.avatar || "https://images.pexels.com/photos/941693/pexels-photo-941693.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"} // Utilisation de l'avatar utilisateur s'il existe
+                                    alt="Profile"
+                                    style={{ width: "32px", height: "32px" }}
+                                />
+                            </IconButton>
 
-                    {/* Menu déroulant du profil */}
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                        transformOrigin={{ vertical: "top", horizontal: "right" }}
-                    >
-                        <MenuItem onClick={handleMenuClose}>
-                            <AccountCircleIcon style={{ marginRight: "8px" }} />
-                            Voir le profil
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuClose}>
-                            <SettingsIcon style={{ marginRight: "8px" }} />
-                            Modifier le profil
-                        </MenuItem>
-                        <MenuItem onClick={handleMenuClose}>
-                            <ExitToAppIcon style={{ marginRight: "8px" }} />
-                            Se déconnecter
-                        </MenuItem>
-                    </Menu>
+                            {/* Menu déroulant du profil */}
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleMenuClose}
+                                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                            >
+                                <MenuItem onClick={handleMenuClose}>
+                                    <AccountCircleIcon style={{ marginRight: "8px" }} />
+                                    Voir le profil
+                                </MenuItem>
+                                <MenuItem onClick={handleMenuClose}>
+                                    <SettingsIcon style={{ marginRight: "8px" }} />
+                                    Modifier le profil
+                                </MenuItem>
+                                <MenuItem onClick={handleMenuClose}>
+                                    <ExitToAppIcon style={{ marginRight: "8px" }} />
+                                    Se déconnecter
+                                </MenuItem>
+                            </Menu>
+                        </>
+                    )}
                 </div>
             </Toolbar>
         </AppBar>

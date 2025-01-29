@@ -11,43 +11,43 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import logo from '../assets/images/logo-emsi.png';
 
-const Sidebar = () => {
+const Sidebar = ({ userRole }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 
+  // Configuration des menus par rôle
   const menuSections = [
     {
       title: "GÉNÉRAL",
       items: [
-        { icon: <DashboardIcon />, label: "Tableau de bord", path: "/admin/dashboard" }
+        { icon: <DashboardIcon />, label: "Tableau de bord", path: "/admin/dashboard", roles: ['ADMIN'] }
       ]
     },
     {
       title: "GESTION",
       items: [
-        { icon: <PeopleIcon />, label: "Étudiants", path: "/admin/etudiants" },
-        { icon: <ClassIcon />, label: "Classes", path: "/admin/classes" },
-        { icon: <SchoolIcon />, label: "Filières", path: "/majors" }
+        { icon: <PeopleIcon />, label: "Étudiants", path: "/admin/etudiants", roles: ['ADMIN'] },
+
       ]
     },
     {
       title: "ACADÉMIQUE",
       items: [
-        { icon: <GradeIcon />, label: "Notes", path: "/grades" },
-        { icon: <AssignmentIcon />, label: "Matières", path: "/subjects" }
+        { icon: <GradeIcon />, label: "Notes", path: "/admin/grades", roles: ['ADMIN', 'STUDENT'] },
+        { icon: <AssignmentIcon />, label: "Matières", path: "/admin/matiere", roles: ['ADMIN'] }
       ]
     },
     {
       title: "PARAMÈTRES",
       items: [
-        { icon: <SettingsIcon />, label: "Configuration", path: "/settings" }
+        { icon: <SettingsIcon />, label: "Users Manage", path: "/admin/users", roles: ['ADMIN'] }
       ]
     },
     {
       title: "COMPTE",
       items: [
-        { icon: <AccountCircleOutlinedIcon />, label: "Profil", path: "/profile" },
-        { icon: <ExitToAppIcon />, label: "Déconnexion", path: "/logout" }
+        { icon: <AccountCircleOutlinedIcon />, label: "Profil", path: "/admin/profile", roles: ['ADMIN', 'STUDENT'] },
+        { icon: <ExitToAppIcon />, label: "Déconnexion", path: "/admin/logout", roles: ['ADMIN', 'STUDENT'] }
       ]
     }
   ];
@@ -55,7 +55,7 @@ const Sidebar = () => {
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
   return (
-    <div 
+    <div
       className={`
         ${isCollapsed ? 'w-20' : 'w-64'} 
         border-r border-gray-200 min-h-screen bg-white flex flex-col 
@@ -63,14 +63,14 @@ const Sidebar = () => {
       `}
     >
       {/* Logo Section */}
-      <div 
+      <div
         className="h-20 flex items-center justify-center border-b border-gray-200 cursor-pointer"
         onClick={toggleSidebar}
       >
-        <img 
+        <img
           src={logo}
-          alt="Logo" 
-          className="h-12 w-auto object-contain" 
+          alt="Logo"
+          className="h-12 w-auto object-contain"
         />
       </div>
 
@@ -78,36 +78,45 @@ const Sidebar = () => {
       <div className="flex-1 overflow-y-auto py-2">
         {menuSections.map((section, sectionIndex) => (
           <div key={sectionIndex} className="mb-2">
-            {!isCollapsed && (
-              <p className="text-xs font-bold text-gray-500 px-4 mb-1">
-                {section.title}
-              </p>
+            {/* Afficher les sections uniquement si elles contiennent des items visibles pour le rôle */}
+            {console.log("User Role:", userRole)}
+            {section.items.some(item => item.roles.includes(userRole)) && (
+              <>
+
+                {!isCollapsed && (
+                  <p className="text-xs font-bold text-gray-500 px-4 mb-1">
+                    {section.title}
+                  </p>
+                )}
+                {section.items
+                  .filter(item => item.roles.includes(userRole)) // Filtrer selon le rôle
+                  .map((item, itemIndex) => (
+                    <Link
+                      key={itemIndex}
+                      to={item.path}
+                      className="block no-underline"
+                      title={isCollapsed ? item.label : undefined}
+                    >
+                      <div
+                        className={`
+                          flex items-center p-2 mx-2 rounded-lg cursor-pointer 
+                          ${location.pathname === item.path
+                            ? 'bg-blue-50 text-blue-600'
+                            : 'hover:bg-gray-50 text-gray-600 hover:text-blue-600'}
+                          ${isCollapsed ? 'justify-center' : ''}
+                        `}
+                      >
+                        {React.cloneElement(item.icon, {
+                          className: `${isCollapsed ? 'mr-0' : 'mr-3'} ${location.pathname === item.path ? 'text-blue-600' : 'text-gray-500'}`
+                        })}
+                        {!isCollapsed && (
+                          <span className="text-sm font-medium">{item.label}</span>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+              </>
             )}
-            {section.items.map((item, itemIndex) => (
-              <Link 
-                key={itemIndex} 
-                to={item.path} 
-                className="block no-underline"
-                title={isCollapsed ? item.label : undefined}
-              >
-                <div 
-                  className={`
-                    flex items-center p-2 mx-2 rounded-lg cursor-pointer 
-                    ${location.pathname === item.path 
-                      ? 'bg-blue-50 text-blue-600' 
-                      : 'hover:bg-gray-50 text-gray-600 hover:text-blue-600'}
-                    ${isCollapsed ? 'justify-center' : ''}
-                  `}
-                >
-                  {React.cloneElement(item.icon, { 
-                    className: `${isCollapsed ? 'mr-0' : 'mr-3'} ${location.pathname === item.path ? 'text-blue-600' : 'text-gray-500'}` 
-                  })}
-                  {!isCollapsed && (
-                    <span className="text-sm font-medium">{item.label}</span>
-                  )}
-                </div>
-              </Link>
-            ))}
           </div>
         ))}
       </div>
