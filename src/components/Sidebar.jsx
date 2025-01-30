@@ -26,15 +26,15 @@ const Sidebar = ({ userRole }) => {
     {
       title: "GESTION",
       items: [
-        { icon: <PeopleIcon />, label: "Étudiants", path: "/admin/etudiants", roles: ['ADMIN'] },
+        { icon: <PeopleIcon />, label: "Étudiants", path: "/admin/etudiants", roles: ['ADMIN', 'SCOLARITE'] },
 
       ]
     },
     {
       title: "ACADÉMIQUE",
       items: [
-        { icon: <GradeIcon />, label: "Notes", path: "/admin/grades", roles: ['ADMIN', 'STUDENT'] },
-        { icon: <AssignmentIcon />, label: "Matières", path: "/admin/matiere", roles: ['ADMIN'] }
+        { icon: <GradeIcon />, label: "Notes", path: "/admin/grades", roles: ['ADMIN', 'STUDENT', 'SCOLARITE'] },
+        { icon: <AssignmentIcon />, label: "Matières", path: "/admin/matiere", roles: ['ADMIN', 'SCOLARITE'] }
       ]
     },
     {

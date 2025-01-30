@@ -5,7 +5,7 @@ import Header from './Header';
 const Note = () => {
   const [notes, setNotes] = useState([]);
   const [students, setStudents] = useState([]);
-  const [matieres, setMatieres] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [editingNote, setEditingNote] = useState(null);
@@ -20,7 +20,6 @@ const Note = () => {
   }, []);
 
   useEffect(() => {
-    // Mettre à jour les valeurs du formulaire quand editingNote change
     if (editingNote) {
       setFormValues({
         student: editingNote.student.id,
@@ -28,7 +27,6 @@ const Note = () => {
         grade: editingNote.grade
       });
     } else {
-      // Réinitialiser le formulaire quand on quitte le mode édition
       setFormValues({
         student: '',
         course: '',
@@ -39,28 +37,25 @@ const Note = () => {
 
   const fetchData = async () => {
     try {
-      // Fetch notes
-      const notesResponse = await fetch("http://localhost:8010/api/notes");
+      const notesResponse = await fetch('http://localhost:8010/api/grades');
       const notesData = await notesResponse.json();
       setNotes(notesData);
 
-      // Fetch students
-      const studentsResponse = await fetch("http://localhost:8010/api/students");
+      const studentsResponse = await fetch('http://localhost:8010/api/students');
       const studentsData = await studentsResponse.json();
       setStudents(studentsData);
 
-      // Fetch courses
-      const matieresResponse = await fetch("http://localhost:8010/api/courses");
-      const matieresData = await matieresResponse.json();
-      setMatieres(matieresData);
+      const coursesResponse = await fetch('http://localhost:8010/api/courses');
+      const coursesData = await coursesResponse.json();
+      setCourses(coursesData);
     } catch (error) {
-      console.error("Erreur lors de la récupération des données:", error);
+      console.error('Error fetching data:', error);
     }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormValues(prev => ({
+    setFormValues((prev) => ({
       ...prev,
       [name]: value
     }));
@@ -68,13 +63,11 @@ const Note = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const selectedStudent = students.find(s => s._id === formValues.student);
+    const selectedStudent = students.find((s) => s._id === formValues.student);
 
     const noteData = {
       student: {
-        id: formValues.student,
-        firstname: selectedStudent.firstName,
-        lastname: selectedStudent.lastName
+        id: selectedStudent._id,
       },
       course: formValues.course,
       grade: parseInt(formValues.grade)
@@ -82,36 +75,37 @@ const Note = () => {
 
     try {
       if (editingNote) {
-        const response = await fetch(`http://localhost:8010/api/notes/${editingNote._id}`, {
+        const response = await fetch(`http://localhost:8010/api/grades/${editingNote._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(noteData)
         });
-        if (!response.ok) throw new Error('Erreur lors de la modification');
+        if (!response.ok) throw new Error('Failed to update grade');
 
         const updatedNote = await response.json();
-        setNotes(prev => prev.map(note =>
-          note._id === updatedNote._id ? updatedNote : note
-        ));
+        setNotes((prev) =>
+          prev.map((note) => (note._id === updatedNote._id ? updatedNote : note))
+        );
         setEditingNote(null);
       } else {
-        const response = await fetch("http://localhost:8010/api/notes", {
+        const response = await fetch('http://localhost:8010/api/grades', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(noteData)
         });
-        if (!response.ok) throw new Error('Erreur lors de l\'ajout');
+        if (!response.ok) throw new Error('Failed to add grade');
 
         const newNote = await response.json();
-        setNotes(prev => [...prev, newNote]);
+        setNotes((prev) => [...prev, newNote]);
       }
+
       setFormValues({
         student: '',
         course: '',
         grade: ''
       });
     } catch (error) {
-      console.error("Erreur lors de l'opération:", error);
+      console.error('Error during operation:', error);
     }
   };
 
@@ -126,14 +120,14 @@ const Note = () => {
 
   const deleteNote = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8010/api/notes/${id}`, {
+      const response = await fetch(`http://localhost:8010/api/grades/${id}`, {
         method: 'DELETE'
       });
-      if (!response.ok) throw new Error('Erreur lors de la suppression');
+      if (!response.ok) throw new Error('Failed to delete grade');
 
-      setNotes(prev => prev.filter(note => note._id !== id));
+      setNotes((prev) => prev.filter((note) => note._id !== id));
     } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
+      console.error('Error deleting grade:', error);
     }
   };
 
@@ -150,7 +144,7 @@ const Note = () => {
       <div className="p-4">
         <form onSubmit={handleSubmit} className="mb-4">
           <FormControl fullWidth margin="normal">
-            <InputLabel>Étudiant</InputLabel>
+            <InputLabel>Student</InputLabel>
             <Select
               name="student"
               value={formValues.student}
@@ -166,23 +160,23 @@ const Note = () => {
           </FormControl>
 
           <FormControl fullWidth margin="normal">
-            <InputLabel>Matière</InputLabel>
+            <InputLabel>Course</InputLabel>
             <Select
               name="course"
               value={formValues.course}
               onChange={handleInputChange}
               required
             >
-              {matieres.map((matiere) => (
-                <MenuItem key={matiere._id} value={matiere.name}>
-                  {matiere.name}
+              {courses.map((course) => (
+                <MenuItem key={course._id} value={course.name}>
+                  {course.name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
 
           <TextField
-            label="Note"
+            label="Grade"
             name="grade"
             type="number"
             value={formValues.grade}
@@ -193,26 +187,14 @@ const Note = () => {
             required
           />
 
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            className="mt-3"
-          >
-            {editingNote ? 'Modifier' : 'Ajouter'}
+          <Button type="submit" variant="contained" color="primary" className="mt-3">
+            {editingNote ? 'Update Grade' : 'Add Grade'}
           </Button>
 
           {editingNote && (
-            <>
-              <Button
-                variant="outlined"
-                onClick={handleCancelEdit}
-                className="ml-2"
-              >
-                Annuler
-              </Button>
-
-            </>
+            <Button variant="outlined" onClick={handleCancelEdit} className="ml-2">
+              Cancel
+            </Button>
           )}
         </form>
 
@@ -220,9 +202,9 @@ const Note = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Étudiant</TableCell>
-                <TableCell>Matière</TableCell>
-                <TableCell>Note</TableCell>
+                <TableCell>Student</TableCell>
+                <TableCell>Course</TableCell>
+                <TableCell>Grade</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -231,9 +213,7 @@ const Note = () => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((note) => (
                   <TableRow key={note._id}>
-                    <TableCell>
-                      {`${note.student.firstname} ${note.student.lastname}`}
-                    </TableCell>
+                    <TableCell>{`${note.student.firstname} ${note.student.lastname}`}</TableCell>
                     <TableCell>{note.course}</TableCell>
                     <TableCell>{note.grade}</TableCell>
                     <TableCell>
@@ -243,14 +223,14 @@ const Note = () => {
                         onClick={() => setEditingNote(note)}
                         className="mr-2"
                       >
-                        Modifier
+                        Edit
                       </Button>
                       <Button
                         variant="contained"
                         color="error"
                         onClick={() => deleteNote(note._id)}
                       >
-                        Supprimer
+                        Delete
                       </Button>
                     </TableCell>
                   </TableRow>

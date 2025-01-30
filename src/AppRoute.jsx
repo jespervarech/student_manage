@@ -22,8 +22,6 @@ const AppRoute = createBrowserRouter([
     path: "/login",
     element: <Login />,
   },
-
-
   {
     path: "/admin",
     element:
@@ -42,6 +40,7 @@ const AppRoute = createBrowserRouter([
       { path: "profile", element: <Profile /> },
     ],
   },
+
 ]);
 
 export default AppRoute;
