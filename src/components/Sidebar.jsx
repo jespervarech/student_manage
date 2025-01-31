@@ -54,7 +54,7 @@ const Sidebar = ({ userRole }) => {
       title: "COMPTE",
       items: [
         { icon: <AccountCircleOutlinedIcon />, label: "Profil", path: "/admin/profile", roles: ['ADMIN', 'STUDENT'] },
-        { icon: <ExitToAppIcon />, label: "Déconnexion", path: "/admin/logout", roles: ['ADMIN', 'STUDENT'] }
+        { icon: <ExitToAppIcon />, label: "Déconnexion", path: "/admin/logout", roles: ['ADMIN', 'STUDENT', 'SCOLARITE'] }
       ]
     }
   ];
