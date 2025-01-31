@@ -40,7 +40,7 @@ const Sidebar = ({ userRole }) => {
       items: [
         { icon: <GradeIcon />, label: "Notes", path: "/admin/grades", roles: ['ADMIN', 'SCOLARITE'] },
         { icon: <AssignmentIcon />, label: "Matières", path: "/admin/matiere", roles: ['ADMIN', 'SCOLARITE'] },
-        { icon: <AssignmentIcon />, label: "Notes", path: "/admin/grades/${gradeId}", roles: ['STUDENT'] }
+        { icon: <AssignmentIcon />, label: "Mes notes", path: "/admin/gradesstudents", roles: ['STUDENT'] }
 
       ]
     },
