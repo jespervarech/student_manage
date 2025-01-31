@@ -10,13 +10,13 @@ import {
 } from 'lucide-react';
 
 const StudentDashboard = () => {
-  const { user } = useUserContext(); // Récupérer et mettre à jour les infos utilisateur
+  const { user } = useUserContext(); // Récupérer les infos utilisateur
 
   const [studentData, setStudentData] = useState({
-    name: '',
+    student: {},
     grades: [],
     averageGrade: 0,
-    totalCourses: 0
+    courses: []
   });
 
   useEffect(() => {
@@ -27,8 +27,8 @@ const StudentDashboard = () => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           params: { userId: user.id }
-
         });
+
         setStudentData(response.data);
       } catch (error) {
         console.error('Error fetching student statistics:', error);
@@ -41,7 +41,7 @@ const StudentDashboard = () => {
   const statCards = [
     {
       title: "Student Name",
-      value: studentData.firstName,
+      value: `${studentData.student?.firstName || 'N/A'} ${studentData.student?.lastName || ''}`,
       icon: UserCircle,
       colorClass: "text-primary"
     },
@@ -53,7 +53,7 @@ const StudentDashboard = () => {
     },
     {
       title: "Total Courses",
-      value: studentData.totalCourses,
+      value: studentData.courses?.length || 0,
       icon: BookOpen,
       colorClass: "text-purple"
     }
@@ -95,14 +95,14 @@ const StudentDashboard = () => {
               <thead>
                 <tr>
                   <th>Course</th>
-                  <th>Score</th>
+                  <th>Grade</th>
                 </tr>
               </thead>
               <tbody>
                 {studentData.grades?.map((grade, index) => (
                   <tr key={index}>
-                    <td>{grade.courseId?.name || 'Unknown Course'}</td>
-                    <td>{grade.score?.toFixed(2) || 'N/A'}</td>
+                    <td>{grade.course?.name || 'Unknown Course'}</td>
+                    <td>{grade.grade?.toFixed(2) || 'N/A'}</td>
                   </tr>
                 ))}
               </tbody>
