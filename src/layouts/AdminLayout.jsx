@@ -50,25 +50,30 @@ const AdminLayout = () => {
   if (loading) {
     return <p>Chargement...</p>; // Ou rediriger vers la page de connexion si nécessaire
   }
-
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <Sidebar userRole={user.role} />
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Navbar */}
         <Navbar user={user} />
 
-        {/* Dynamic Content */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-6">
-          <Outlet />
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+          <div className="container mx-auto">
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <Outlet />
+            </div>
+          </div>
         </main>
 
         {/* Footer */}
         <Footer />
       </div>
     </div>
+  
   );
 };
 

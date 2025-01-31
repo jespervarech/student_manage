@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
+  Box,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
   Table,
   TableBody,
   TableCell,
@@ -7,35 +12,32 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TablePagination,
-  Button,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   IconButton,
-  Box,
-  Typography,
-  CircularProgress,
-  Alert,
-  Snackbar
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
+  TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText
+} from "@mui/material";
+import {
+  BookOpen,
+  Edit,
+  Trash2,
+  PlusCircle
+} from "lucide-react";
 
 const Matiere = () => {
   const [matieres, setMatieres] = useState([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
-  const [newMatiere, setNewMatiere] = useState('');
-  const [editMatiere, setEditMatiere] = useState({ id: null, name: '' });
-  const [openDialog, setOpenDialog] = useState(false);
-  const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null });
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [editingMatiere, setEditingMatiere] = useState(null);
+
+  const [formValues, setFormValues] = useState({
+    name: ""
+  });
 
   useEffect(() => {
     fetchMatieres();
@@ -44,13 +46,11 @@ const Matiere = () => {
   const fetchMatieres = async () => {
     try {
       const response = await fetch("http://localhost:8010/api/courses");
-      if (!response.ok) throw new Error('Erreur réseau');
       const data = await response.json();
       setMatieres(data);
+      setLoading(false);
     } catch (error) {
-      console.error("Erreur lors de la récupération des matières:", error);
-      showSnackbar('Erreur lors du chargement des matières', 'error');
-    } finally {
+      console.error("Erreur de chargement", error);
       setLoading(false);
     }
   };
@@ -58,199 +58,215 @@ const Matiere = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8010/api/courses", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newMatiere })
+      const url = editingMatiere
+        ? `http://localhost:8010/api/courses/${editingMatiere._id}`
+        : "http://localhost:8010/api/courses";
+
+      const method = editingMatiere ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formValues)
       });
-      
-      if (!response.ok) throw new Error('Erreur lors de l\'ajout');
-      
-      const data = await response.json();
-      setMatieres([...matieres, data]);
-      setNewMatiere('');
-      showSnackbar('Matière ajoutée avec succès');
+
+      const result = await response.json();
+
+      if (editingMatiere) {
+        setMatieres(prev =>
+          prev.map(matiere =>
+            matiere._id === result._id ? result : matiere
+          )
+        );
+      } else {
+        setMatieres(prev => [...prev, result]);
+      }
+
+      handleCloseModal();
     } catch (error) {
-      console.error("Erreur lors de l'ajout:", error);
-      showSnackbar('Erreur lors de l\'ajout de la matière', 'error');
+      console.error("Erreur d'enregistrement", error);
     }
   };
 
-  const handleEdit = async () => {
+  const handleDelete = async (id) => {
+    if (!window.confirm("Voulez-vous vraiment supprimer cette matière ?")) return;
+
     try {
-      const response = await fetch(`http://localhost:8010/api/courses/${editMatiere.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: editMatiere.name })
+      await fetch(`http://localhost:8010/api/courses/${id}`, {
+        method: "DELETE"
       });
 
-      if (!response.ok) throw new Error('Erreur lors de la modification');
-
-      setMatieres(matieres.map(m => 
-        m._id === editMatiere.id ? { ...m, name: editMatiere.name } : m
-      ));
-      setOpenDialog(false);
-      showSnackbar('Matière modifiée avec succès');
+      setMatieres(prev => prev.filter(matiere => matiere._id !== id));
     } catch (error) {
-      console.error("Erreur lors de la modification:", error);
-      showSnackbar('Erreur lors de la modification', 'error');
+      console.error("Erreur de suppression", error);
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      const response = await fetch(`http://localhost:8010/api/courses/${deleteDialog.id}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) throw new Error('Erreur lors de la suppression');
-
-      setMatieres(matieres.filter(m => m._id !== deleteDialog.id));
-      setDeleteDialog({ open: false, id: null });
-      showSnackbar('Matière supprimée avec succès');
-    } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
-      showSnackbar('Erreur lors de la suppression', 'error');
-    }
+  const handleOpenModal = (matiere = null) => {
+    setEditingMatiere(matiere);
+    setFormValues(matiere ? { name: matiere.name } : { name: "" });
+    setOpenModal(true);
   };
 
-  const showSnackbar = (message, severity = 'success') => {
-    setSnackbar({ open: true, message, severity });
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setEditingMatiere(null);
   };
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-        <CircularProgress />
-      </Box>
-    );
-  }
+  const filteredMatieres = matieres.filter(matiere =>
+    matiere.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <Paper sx={{ p: 3, maxWidth: 1200, margin: 'auto' }}>
-      <Typography variant="h4" gutterBottom>
-        Gestion des Matières
-      </Typography>
+    <Box sx={{ p: 3 }}>
+      {/* Statistiques */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              bgcolor: '#f0f4c3',
+              borderRadius: 2,
+              transition: 'transform 0.3s',
+              '&:hover': { transform: 'scale(1.05)' }
+            }}
+          >
+            <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
+              <BookOpen size={40} strokeWidth={1.5} style={{ marginRight: 16, color: '#827717' }} />
+              <Box>
+                <Typography variant="h6" color="textSecondary">
+                  Total Matières
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                  {matieres.length}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              bgcolor: '#b2dfdb',
+              borderRadius: 2,
+              transition: 'transform 0.3s',
+              '&:hover': { transform: 'scale(1.05)' }
+            }}
+          >
+            <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
+              <BookOpen size={40} strokeWidth={1.5} style={{ marginRight: 16, color: '#004d40' }} />
+              <Box>
+                <Typography variant="h6" color="textSecondary">
+                  Matières Uniques
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                  {new Set(matieres.map(m => m.name)).size}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              bgcolor: '#ffccbc',
+              borderRadius: 2,
+              transition: 'transform 0.3s',
+              '&:hover': { transform: 'scale(1.05)' }
+            }}
+          >
+            <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
+              <BookOpen size={40} strokeWidth={1.5} style={{ marginRight: 16, color: '#bf360c' }} />
+              <Box>
+                <Typography variant="h6" color="textSecondary">
+                  Dernier Ajout
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                  {matieres.length > 0
+                    ? matieres[matieres.length - 1].name
+                    : 'N/A'}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
-      <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4, display: 'flex', gap: 2 }}>
+      {/* Actions et Recherche */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <TextField
-          label="Nouvelle matière"
-          value={newMatiere}
-          onChange={(e) => setNewMatiere(e.target.value)}
-          fullWidth
-          required
+          variant="outlined"
+          placeholder="Rechercher des matières"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ width: '70%' }}
         />
         <Button
-          type="submit"
           variant="contained"
-          startIcon={<AddIcon />}
-          sx={{ minWidth: 120 }}
+          color="primary"
+          startIcon={<PlusCircle />}
+          onClick={() => handleOpenModal()}
         >
-          Ajouter
+          Ajouter une Matière
         </Button>
       </Box>
 
-      <TableContainer component={Paper} variant="outlined">
+      {/* Liste des matières */}
+      <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Matière</TableCell>
+              <TableCell>Nom de la Matière</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {matieres
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((matiere) => (
-                <TableRow key={matiere._id}>
-                  <TableCell>{matiere.name}</TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      onClick={() => {
-                        setEditMatiere({ id: matiere._id, name: matiere.name });
-                        setOpenDialog(true);
-                      }}
-                      color="primary"
-                      size="small"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => setDeleteDialog({ open: true, id: matiere._id })}
-                      color="error"
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
+            {filteredMatieres.map((matiere) => (
+              <TableRow key={matiere._id}>
+                <TableCell>{matiere.name}</TableCell>
+                <TableCell align="right">
+                  <IconButton
+                    color="primary"
+                    onClick={() => handleOpenModal(matiere)}
+                  >
+                    <Edit size={20} />
+                  </IconButton>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleDelete(matiere._id)}
+                  >
+                    <Trash2 size={20} />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={matieres.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={(e, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-        />
       </TableContainer>
 
-      {/* Dialog de modification */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Modifier la matière</DialogTitle>
+      {/* Modal d'ajout/édition */}
+      <Dialog open={openModal} onClose={handleCloseModal} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {editingMatiere ? "Modifier la Matière" : "Ajouter une Matière"}
+        </DialogTitle>
         <DialogContent>
           <TextField
-            autoFocus
-            margin="dense"
-            label="Nom de la matière"
+            label="Nom de la Matière"
+            name="name"
+            value={formValues.name}
+            onChange={(e) => setFormValues({ name: e.target.value })}
             fullWidth
-            value={editMatiere.name}
-            onChange={(e) => setEditMatiere({ ...editMatiere, name: e.target.value })}
+            required
+            sx={{ mt: 2 }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Annuler</Button>
-          <Button onClick={handleEdit} variant="contained">Modifier</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog de suppression */}
-      <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, id: null })}>
-        <DialogTitle>Confirmer la suppression</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Êtes-vous sûr de vouloir supprimer cette matière ?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialog({ open: false, id: null })}>Annuler</Button>
-          <Button onClick={handleDelete} color="error" variant="contained">
-            Supprimer
+          <Button onClick={handleCloseModal}>Annuler</Button>
+          <Button onClick={handleSubmit} color="primary">
+            {editingMatiere ? "Modifier" : "Ajouter"}
           </Button>
         </DialogActions>
       </Dialog>
-
-      {/* Snackbar pour les notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      >
-        <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Paper>
+    </Box>
   );
 };
 

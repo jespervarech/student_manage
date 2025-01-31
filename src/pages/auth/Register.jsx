@@ -1,10 +1,23 @@
 import React, { useState } from "react";
-import { MdAlternateEmail } from "react-icons/md";
-import { FaFingerprint, FaRegEye, FaRegEyeSlash, FaUser } from "react-icons/fa";
-import AuthLayout from "../../components/AuthLayout";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  InputAdornment,
+  IconButton,
+  MenuItem
+} from "@mui/material";
+import {
+  Email as EmailIcon,
+  Person as PersonIcon,
+  Lock as LockIcon,
+  Visibility,
+  VisibilityOff
+} from "@mui/icons-material";
 import { useNavigate } from 'react-router-dom';
 
-const RegisterForm = ({ onLoginClick }) => {
+const RegisterForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -12,24 +25,31 @@ const RegisterForm = ({ onLoginClick }) => {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "STUDENT", // Par défaut le rôle est 'STUDENT'
+    role: "STUDENT",
     firstName: "",
     lastName: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    confirmPassword: false
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
+    setFormData(prev => ({
+      ...prev,
       [name]: value,
     }));
   };
 
   const handleGeneratePassword = () => {
-    const generatedPassword = Math.random().toString(36).slice(-6); // Générer un mot de passe aléatoire de 6 caractères
-    setFormData({ ...formData, password: generatedPassword, confirmPassword: generatedPassword });
+    const generatedPassword = Math.random().toString(36).slice(-6);
+    setFormData(prev => ({
+      ...prev,
+      password: generatedPassword,
+      confirmPassword: generatedPassword
+    }));
   };
 
   const handleRegister = async (e) => {
@@ -71,145 +91,168 @@ const RegisterForm = ({ onLoginClick }) => {
   };
 
   return (
-    <form onSubmit={handleRegister} className="w-full flex flex-col gap-3">
-      {/* Champ Nom d'utilisateur */}
-      <div className="w-full flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200">
-        <FaUser className="text-gray-500" />
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-          className="bg-transparent border-0 w-full outline-none text-sm md:text-base text-gray-800 placeholder-gray-400"
-        />
-      </div>
+    <Box
+      component="form"
+      onSubmit={handleRegister}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        width: '100%',
+        maxWidth: 400,
+        margin: 'auto' // Center the entire form
+      }}
+    >
+      <Typography variant="h5" align="center" gutterBottom>
+        Créer un compte
+      </Typography>
 
-      {/* Champ Email */}
-      <div className="w-full flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200">
-        <MdAlternateEmail className="text-gray-500" />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email address"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="bg-transparent border-0 w-full outline-none text-sm md:text-base text-gray-800 placeholder-gray-400"
-        />
-      </div>
+      <TextField
+        fullWidth
+        label="Nom d'utilisateur"
+        name="username"
+        value={formData.username}
+        onChange={handleChange}
+        required
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <PersonIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
 
-      {/* Champ Sélection du rôle */}
-      <div className="w-full flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200">
-        <select
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          className="bg-transparent border-0 w-full outline-none text-sm md:text-base text-gray-800"
-        >
-          <option value="STUDENT">Étudiant</option>
-          <option value="SCOLARITE">SCOLARITE</option>
-        </select>
-      </div>
+      <TextField
+        fullWidth
+        label="Adresse email"
+        name="email"
+        type="email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <EmailIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
 
-      {/* Si le rôle est "STUDENT", afficher les champs nom et prénom */}
+      <TextField
+        fullWidth
+        select
+        label="Rôle"
+        name="role"
+        value={formData.role}
+        onChange={handleChange}
+      >
+        <MenuItem value="STUDENT">Étudiant</MenuItem>
+        <MenuItem value="SCOLARITE">SCOLARITE</MenuItem>
+      </TextField>
+
       {formData.role === "STUDENT" && (
         <>
-          <div className="w-full flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200">
-            <input
-              type="text"
-              name="firstName"
-              placeholder="Prénom"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-              className="bg-transparent border-0 w-full outline-none text-sm md:text-base text-gray-800 placeholder-gray-400"
-            />
-          </div>
+          <TextField
+            fullWidth
+            label="Prénom"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
 
-          <div className="w-full flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200">
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Nom"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-              className="bg-transparent border-0 w-full outline-none text-sm md:text-base text-gray-800 placeholder-gray-400"
-            />
-          </div>
+          <TextField
+            fullWidth
+            label="Nom"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+          />
         </>
       )}
 
-      {/* Champ Mot de passe */}
-      <div className="w-full flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200 relative">
-        <FaFingerprint className="text-gray-500" />
-        <input
-          type={showPassword ? "text" : "password"}
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="bg-transparent border-0 w-full outline-none text-sm md:text-base text-gray-800 placeholder-gray-400"
-        />
-        {showPassword ? (
-          <FaRegEyeSlash
-            className="absolute right-5 cursor-pointer text-gray-500 hover:text-gray-700"
-            onClick={() => setShowPassword(false)}
-          />
-        ) : (
-          <FaRegEye
-            className="absolute right-5 cursor-pointer text-gray-500 hover:text-gray-700"
-            onClick={() => setShowPassword(true)}
-          />
-        )}
-      </div>
+      <TextField
+        fullWidth
+        label="Mot de passe"
+        name="password"
+        type={showPassword.password ? "text" : "password"}
+        value={formData.password}
+        onChange={handleChange}
+        required
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <LockIcon />
+            </InputAdornment>
+          ),
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => setShowPassword(prev => ({
+                  ...prev,
+                  password: !prev.password
+                }))}
+                edge="end"
+              >
+                {showPassword.password ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
 
-      {/* Champ Confirmation de mot de passe */}
-      <div className="w-full flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200 relative">
-        <FaFingerprint className="text-gray-500" />
-        <input
-          type={showConfirmPassword ? "text" : "password"}
-          name="confirmPassword"
-          placeholder="Confirm Password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-          className="bg-transparent border-0 w-full outline-none text-sm md:text-base text-gray-800 placeholder-gray-400"
-        />
-        {showConfirmPassword ? (
-          <FaRegEyeSlash
-            className="absolute right-5 cursor-pointer text-gray-500 hover:text-gray-700"
-            onClick={() => setShowConfirmPassword(false)}
-          />
-        ) : (
-          <FaRegEye
-            className="absolute right-5 cursor-pointer text-gray-500 hover:text-gray-700"
-            onClick={() => setShowConfirmPassword(true)}
-          />
-        )}
-      </div>
+      <TextField
+        fullWidth
+        label="Confirmer le mot de passe"
+        name="confirmPassword"
+        type={showPassword.confirmPassword ? "text" : "password"}
+        value={formData.confirmPassword}
+        onChange={handleChange}
+        required
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <LockIcon />
+            </InputAdornment>
+          ),
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => setShowPassword(prev => ({
+                  ...prev,
+                  confirmPassword: !prev.confirmPassword
+                }))}
+                edge="end"
+              >
+                {showPassword.confirmPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
 
-      {/* Bouton générer le mot de passe */}
-      <button
-        type="button"
+      <Button
+        variant="outlined"
         onClick={handleGeneratePassword}
-        className="w-full p-2 bg-gray-300 rounded-xl mt-3 hover:bg-gray-400 text-sm md:text-base text-black"
+        sx={{ mb: 1 }}
       >
         Générer mot de passe
-      </button>
+      </Button>
 
-      {/* Bouton d'inscription */}
-      <button
+      <Button
         type="submit"
-        className="w-full p-2 bg-blue-500 rounded-xl mt-3 hover:bg-blue-600 text-sm md:text-base text-white"
+        variant="contained"
+        color="primary"
+        fullWidth
       >
         Créer un compte
-      </button>
-    </form>
+      </Button>
+    </Box>
   );
 };
 
 export default RegisterForm;
+

@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import Header from './Header';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Paper, 
+  TablePagination, 
+  Button, 
+  TextField, 
+  FormControl, 
+  InputLabel, 
+  Select, 
+  MenuItem 
+} from '@mui/material';
+import { Edit2, Trash2, PlusCircle } from 'lucide-react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const Note = () => {
+const Note = ({ userRole }) => {
   const [notes, setNotes] = useState([]);
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -64,7 +80,6 @@ const Note = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const selectedStudent = students.find((s) => s._id === formValues.student);
-
     const noteData = {
       student: {
         id: selectedStudent._id,
@@ -81,7 +96,6 @@ const Note = () => {
           body: JSON.stringify(noteData)
         });
         if (!response.ok) throw new Error('Failed to update grade');
-
         const updatedNote = await response.json();
         setNotes((prev) =>
           prev.map((note) => (note._id === updatedNote._id ? updatedNote : note))
@@ -94,11 +108,9 @@ const Note = () => {
           body: JSON.stringify(noteData)
         });
         if (!response.ok) throw new Error('Failed to add grade');
-
         const newNote = await response.json();
         setNotes((prev) => [...prev, newNote]);
       }
-
       setFormValues({
         student: '',
         course: '',
@@ -124,7 +136,6 @@ const Note = () => {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Failed to delete grade');
-
       setNotes((prev) => prev.filter((note) => note._id !== id));
     } catch (error) {
       console.error('Error deleting grade:', error);
@@ -132,122 +143,149 @@ const Note = () => {
   };
 
   const handleChangePage = (event, newPage) => setPage(newPage);
-
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
+  // Check if user has permission to add/edit (ADMIN or SCOLARITE)
+  const canModify = ['ADMIN', 'SCOLARITE'].includes(userRole);
+
   return (
-    <div>
-      <Header />
-      <div className="p-4">
+    <div className="container-fluid p-4">
+      <h2 className="mb-4">Grade Management</h2>
+      
+      {canModify && (
         <form onSubmit={handleSubmit} className="mb-4">
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Student</InputLabel>
-            <Select
-              name="student"
-              value={formValues.student}
-              onChange={handleInputChange}
-              required
-            >
-              {students.map((student) => (
-                <MenuItem key={student._id} value={student._id}>
-                  {`${student.firstName} ${student.lastName}`}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Course</InputLabel>
-            <Select
-              name="course"
-              value={formValues.course}
-              onChange={handleInputChange}
-              required
-            >
-              {courses.map((course) => (
-                <MenuItem key={course._id} value={course.name}>
-                  {course.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <TextField
-            label="Grade"
-            name="grade"
-            type="number"
-            value={formValues.grade}
-            onChange={handleInputChange}
-            inputProps={{ min: 0, max: 100 }}
-            fullWidth
-            margin="normal"
-            required
-          />
-
-          <Button type="submit" variant="contained" color="primary" className="mt-3">
-            {editingNote ? 'Update Grade' : 'Add Grade'}
-          </Button>
-
-          {editingNote && (
-            <Button variant="outlined" onClick={handleCancelEdit} className="ml-2">
-              Cancel
-            </Button>
-          )}
+          <div className="row">
+            <div className="col-md-3">
+              <FormControl fullWidth variant="outlined" className="mb-2">
+                <InputLabel>Student</InputLabel>
+                <Select
+                  name="student"
+                  value={formValues.student}
+                  onChange={handleInputChange}
+                  label="Student"
+                  required
+                >
+                  {students.map((student) => (
+                    <MenuItem key={student._id} value={student._id}>
+                      {`${student.firstName} ${student.lastName}`}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+            <div className="col-md-3">
+              <FormControl fullWidth variant="outlined" className="mb-2">
+                <InputLabel>Course</InputLabel>
+                <Select
+                  name="course"
+                  value={formValues.course}
+                  onChange={handleInputChange}
+                  label="Course"
+                  required
+                >
+                  {courses.map((course) => (
+                    <MenuItem key={course._id} value={course.name}>
+                      {course.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+            <div className="col-md-2">
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Grade"
+                name="grade"
+                type="number"
+                value={formValues.grade}
+                onChange={handleInputChange}
+                required
+                className="mb-2"
+              />
+            </div>
+            <div className="col-md-4 d-flex align-items-center">
+              <Button 
+                type="submit" 
+                variant="contained" 
+                color={editingNote ? 'secondary' : 'primary'} 
+                startIcon={editingNote ? <Edit2 /> : <PlusCircle />}
+                className="me-2"
+              >
+                {editingNote ? 'Update Grade' : 'Add Grade'}
+              </Button>
+              {editingNote && (
+                <Button 
+                  variant="outlined" 
+                  color="error" 
+                  onClick={handleCancelEdit}
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
+          </div>
         </form>
+      )}
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Student</TableCell>
-                <TableCell>Course</TableCell>
-                <TableCell>Grade</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {notes
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((note) => (
-                  <TableRow key={note._id}>
-                    <TableCell>{`${note.student.firstname} ${note.student.lastname}`}</TableCell>
-                    <TableCell>{note.course}</TableCell>
-                    <TableCell>{note.grade}</TableCell>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Student</TableCell>
+              <TableCell>Course</TableCell>
+              <TableCell>Grade</TableCell>
+              {canModify && <TableCell>Actions</TableCell>}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {notes
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((note) => (
+                <TableRow key={note._id}>
+                  <TableCell>{`${note.student.firstname} ${note.student.lastname}`}</TableCell>
+                  <TableCell>{note.course}</TableCell>
+                  <TableCell>{note.grade}</TableCell>
+                  {canModify && (
                     <TableCell>
-                      <Button
-                        variant="contained"
-                        color="primary"
+                      <Button 
+                        variant="outlined" 
+                        color="primary" 
+                        size="small"
+                        startIcon={<Edit2 />}
                         onClick={() => setEditingNote(note)}
-                        className="mr-2"
+                        className="me-2"
                       >
                         Edit
                       </Button>
-                      <Button
-                        variant="contained"
-                        color="error"
+                      <Button 
+                        variant="outlined" 
+                        color="error" 
+                        size="small"
+                        startIcon={<Trash2 />}
                         onClick={() => deleteNote(note._id)}
                       >
                         Delete
                       </Button>
                     </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={notes.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </TableContainer>
-      </div>
+                  )}
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={notes.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </TableContainer>
     </div>
   );
 };

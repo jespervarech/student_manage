@@ -1,103 +1,180 @@
-/* Fond de la page */
 .home-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #f0f4f8, #e6f1f7);
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    padding: 20px;
-    /* Un petit padding pour éviter que le contenu soit trop collé aux bords */
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
 }
 
-/* Contenu centré avec une légère ombre */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(0, 150, 64, 0.05) 1%, transparent 10%),
+        radial-gradient(circle at 75% 75%, rgba(0, 150, 64, 0.05) 1%, transparent 10%),
+        radial-gradient(circle at 50% 50%, rgba(0, 150, 64, 0.05) 1%, transparent 10%);
+    background-size: 100px 100px;
+    animation: particleAnimation 20s linear infinite;
+}
+
+@keyframes particleAnimation {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 100% 100%;
+    }
+}
+
 .content {
-    text-align: center;
-    background: white;
-    padding: 50px;
-    /* Augmentation de l'espace autour du contenu */
-    border-radius: 12px;
-    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    max-width: 600px;
-    /* Augmentation de la largeur du conteneur */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 3rem;
+    max-width: 800px;
     width: 90%;
-    /* Utilisation d'un pourcentage pour s'adapter aux petits écrans */
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(0, 150, 64, 0.1);
+    transform: translateY(0);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
 }
 
-/* Effet de survol sur le contenu */
 .content:hover {
-    box-shadow: 0px 12px 36px rgba(0, 0, 0, 0.2);
-    transform: translateY(-10px);
+    transform: translateY(-5px);
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(0, 150, 64, 0.2);
 }
 
-/* Logo Emsi */
+.logo-container {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
 .logo {
-    max-width: 250px;
-    /* Ajuste la taille du logo */
-    margin-bottom: 25px;
+    max-width: 220px;
+    height: auto;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.text-content {
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #212529;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    font-family: 'Poppins', sans-serif;
+}
+
+.highlight {
+    color: #009640;
+    position: relative;
+    display: inline-block;
+}
+
+.highlight::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #009640;
+    transform: scaleX(0);
     transition: transform 0.3s ease;
 }
 
-/* Effet au survol du logo */
-.logo:hover {
-    transform: scale(1.1);
+.title:hover .highlight::after {
+    transform: scaleX(1);
 }
 
-/* Texte principal */
-.title {
-    font-size: 38px;
-    /* Augmenter la taille du titre */
-    font-weight: 600;
-    color: #2c3e50;
-    margin-top: 15px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 15px;
-    font-family: 'Poppins', sans-serif;
-    white-space: nowrap;
-    /* Empêche le texte de se diviser en plusieurs lignes */
-    overflow: hidden;
-    /* Cache le texte qui déborde si nécessaire */
-    text-overflow: ellipsis;
-    /* Ajoute une ellipse "..." si le texte est trop long */
-}
-
-/* Texte secondaire */
 .subtitle {
-    font-size: 20px;
-    /* Augmenter légèrement la taille du sous-titre */
-    color: #7f8c8d;
-    margin-bottom: 35px;
-    font-family: 'Lora', serif;
-    font-style: italic;
+    font-size: 1.25rem;
+    color: #6c757d;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    font-family: 'Inter', sans-serif;
 }
 
-/* Bouton de connexion */
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #495057;
+    font-size: 1.1rem;
+}
+
+.feature i {
+    color: #009640;
+    font-size: 1.25rem;
+}
+
 .login-button {
-    background-color: #3498db;
-    /* Couleur bleue élégante */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: linear-gradient(135deg, #009640 0%, #00b248 100%);
     color: white;
-    font-size: 20px;
-    /* Augmenter légèrement la taille du texte */
-    padding: 14px 40px;
-    /* Augmenter les marges du bouton */
-    border-radius: 30px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 150, 64, 0.2);
 }
 
-/* Effet au survol du bouton */
 .login-button:hover {
-    background-color: #2980b9;
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 28px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 150, 64, 0.3);
+    color: white;
 }
 
-.login-button:focus {
-    outline: none;
+.login-button i {
+    transition: transform 0.3s ease;
+}
+
+.login-button:hover i {
+    transform: translateX(5px);
+}
+
+@media (max-width: 768px) {
+    .content {
+        padding: 2rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .features {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
 }

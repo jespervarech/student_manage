@@ -13,6 +13,10 @@ import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import Logout from "./pages/auth/Logout";
 import Profile from "./pages/admin/profile";
+import AdminDashboard from "./components/AdminDashboard";
+import ScolariteDashboard from "./components/ScolariteDashboard";
+import StudentDashboard from "./components/StudentDashboard";
+import GradeEtudiant from "./pages/gestion/GradeEtudiant";
 
 const AppRoute = createBrowserRouter([
   {
@@ -27,14 +31,16 @@ const AppRoute = createBrowserRouter([
     element:
       <AdminLayout />,
     children: [
+      { path: "homeadmin", element: <AdminDashboard /> },
+      { path: "grades/?id", element: <GradeEtudiant /> },
+      { path: "homestudent", element: <StudentDashboard /> },
+      { path: "homescolarite", element: <ScolariteDashboard /> },
       { path: "register", element: <Register /> },
       { path: "grades", element: <Grade /> },
       { path: "matiere", element: <Matiere /> },
-      { path: "dashboard", element: <Dashboard /> },
       { path: "users", element: <Users /> },
       { path: "settings", element: <Settings /> },
       { path: "etudiants", element: <Etudiant /> },
-      { path: "classes", element: <Grade /> },
       { path: "logout", element: <Logout /> },
       { path: "users", element: <Users /> },
       { path: "profile", element: <Profile /> },
