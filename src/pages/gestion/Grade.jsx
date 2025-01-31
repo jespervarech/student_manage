@@ -62,7 +62,18 @@ const Grade = () => {
             const studentsData = await studentsRes.json();
             const coursesData = await coursesRes.json();
 
-            setGrades(gradesData);
+            // Log the data to check the structure
+            console.log("Grades Data:", gradesData);
+            console.log("Students Data:", studentsData);
+            console.log("Courses Data:", coursesData);
+
+            // Check that gradesData is an array
+            if (Array.isArray(gradesData)) {
+                setGrades(gradesData);
+            } else {
+                console.error("Les données des notes ne sont pas sous forme de tableau");
+            }
+
             setStudents(studentsData);
             setCourses(coursesData);
             setLoading(false);
@@ -145,7 +156,7 @@ const Grade = () => {
         setEditingGrade(null);
     };
 
-    const filteredGrades = grades.filter(grade => {
+    const filteredGrades = Array.isArray(grades) ? grades.filter(grade => {
         const student = students.find(s => s._id === grade.student);
         const course = courses.find(c => c._id === grade.course);
 
@@ -154,7 +165,7 @@ const Grade = () => {
             (student?.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (course?.name.toLowerCase().includes(searchTerm.toLowerCase()))
         );
-    });
+    }) : [];
 
     const averageGrade = filteredGrades.length > 0
         ? (filteredGrades.reduce((sum, grade) => sum + parseFloat(grade.grade), 0) / filteredGrades.length).toFixed(2)
@@ -353,6 +364,7 @@ const Grade = () => {
                             value={formValues.date}
                             onChange={handleInputChange}
                             fullWidth
+                            required
                             InputLabelProps={{ shrink: true }}
                         />
                     </Box>
@@ -360,7 +372,7 @@ const Grade = () => {
                 <DialogActions>
                     <Button onClick={handleCloseModal}>Annuler</Button>
                     <Button onClick={handleSubmit} color="primary">
-                        {editingGrade ? "Modifier" : "Ajouter"}
+                        {editingGrade ? "Mettre à jour" : "Ajouter"}
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -81,7 +81,9 @@ const LoginForm = ({ onRegisterClick }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8010/auth/google"; // Redirection vers la route backend
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -192,6 +194,29 @@ const LoginForm = ({ onRegisterClick }) => {
                     </button>
                   </div>
                 </form>
+              </div>
+              <div className="relative w-full flex items-center justify-center py-4 mt-6">
+                <div className="w-2/5 h-[2px] bg-gray-300"></div>
+                <h3 className="font-lora text-sm px-4 text-gray-500">Ou</h3>
+                <div className="w-2/5 h-[2px] bg-gray-300"></div>
+              </div>
+
+              {/* Boutons tiers */}
+              <div className="w-full flex items-center justify-evenly gap-4 mt-6">
+                {/* Google Login Button */}
+                <div className="p-2 bg-gray-100 cursor-pointer rounded-xl border border-gray-200 hover:bg-gray-200 transition duration-200 ease-in-out">
+                  <button
+                    onClick={handleGoogleLogin}
+                    className="flex items-center bg-red-600 text-white rounded-lg px-4 py-2 space-x-2"
+                  >
+                    <img
+                      src="/src/assets/images/logo-google.png"
+                      alt="google-icon"
+                      className="w-6 md:w-8"
+                    />
+                    <span className="text-md font-semibold">Se connecter avec Google</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
