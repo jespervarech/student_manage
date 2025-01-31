@@ -1,109 +1,28 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
+import { AtSign, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 
-const emsiStyles = {
-  emsiGreen: "#009640",
-  backgroundContainer: {
-    background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%)',
-    minHeight: '100vh',
-    padding: '40px 0',
-  },
-  card: {
-    background: 'white',
-    borderRadius: '15px',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
-    overflow: 'hidden',
-    border: 'none',
-  },
-  header: {
-    background: 'linear-gradient(135deg, #009640 0%, #00b248 100%)',
-    padding: '30px 20px',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  headerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.1) 0%, transparent 60%)',
-  },
-  title: {
-    fontSize: '1.8rem',
-    fontWeight: '600',
-    marginBottom: '10px',
-    position: 'relative',
-  },
-  input: {
-    border: '2px solid #e8ecef',
-    borderRadius: '10px',
-    padding: '12px',
-    fontSize: '1rem',
-    transition: 'all 0.3s ease',
-  },
-  inputFocus: {
-    borderColor: '#009640',
-    boxShadow: '0 0 0 0.2rem rgba(0, 150, 64, 0.15)',
-  },
-  button: {
-    background: 'linear-gradient(135deg, #009640 0%, #00b248 100%)',
-    border: 'none',
-    borderRadius: '10px',
-    padding: '14px',
-    fontSize: '1.1rem',
-    fontWeight: '600',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 4px 15px rgba(0, 150, 64, 0.2)',
-  },
-  buttonHover: {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 6px 20px rgba(0, 150, 64, 0.3)',
-  },
-  footer: {
-    background: '#f8f9fa',
-    borderTop: '1px solid #eef0f2',
-  },
-  link: {
-    color: '#009640',
-    fontWeight: '600',
-    transition: 'color 0.3s ease',
-  }
-};
-
-const LoginForm = ({ onRegisterClick }) => {
+const LoginForm = () => {
   const navigate = useNavigate();
   const { initializeUserFromToken } = useContext(UserContext);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8010/auth/google"; // Redirection vers la route backend
-  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    setFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    const { email, password } = event.target;
-
     try {
       const response = await fetch('http://localhost:8010/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email: email.value, password: password.value })
+        body: JSON.stringify(formData)
       });
 
       const data = await response.json();
@@ -112,114 +31,118 @@ const LoginForm = ({ onRegisterClick }) => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         initializeUserFromToken(data.token);
-        navigate('/admin/home' + data.user.role.toLowerCase());
+        navigate(`/admin/home${data.user.role.toLowerCase()}`);
       } else {
         setError(data.message);
       }
     } catch (error) {
-      console.error('Error:', error);
-      setError("Une erreur est survenue lors de la connexion");
+      console.error('Login Error:', error);
+      setError("Erreur de connexion");
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8010/auth/google";
+  };
+
   return (
-    <div style={emsiStyles.backgroundContainer} className="d-flex align-items-center">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-md-6 col-lg-5">
-            <div style={emsiStyles.card}>
-              <div style={emsiStyles.header}>
-                <div style={emsiStyles.headerOverlay}></div>
-                <h3 style={emsiStyles.title} className="text-white text-center mb-0">
-                  Bienvenue à l'EMSI
-                </h3>
-                <p className="text-white text-center mb-0 opacity-75">
-                  Connectez-vous à votre espace
-                </p>
-              </div>
-              <div className="p-4 p-md-5">
-                {error && (
-                  <div className="alert alert-danger" role="alert">
-                    {error}
-                  </div>
-                )}
-                <form onSubmit={handleLogin}>
-                  <div className="mb-4">
-                    <label className="form-label fw-medium mb-2">Email</label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      style={emsiStyles.input}
-                      placeholder="exemple@emsi.ma"
-                    />
-                  </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md">
+        <div className="bg-white shadow-2xl rounded-2xl overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-green-600 to-green-500 p-6 text-center text-white">
+            <h2 className="text-2xl font-bold">EMSI Espace Étudiant</h2>
+            <p className="text-sm opacity-75">Connectez-vous à votre compte</p>
+          </div>
 
-                  <div className="mb-4">
-                    <label className="form-label fw-medium mb-2">Mot de passe</label>
-                    <div className="position-relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        className="form-control"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                        style={emsiStyles.input}
-                        placeholder="Votre mot de passe"
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
-                        onClick={() => setShowPassword(!showPassword)}
-                        style={{ color: emsiStyles.emsiGreen }}
-                      >
-                        <i className={`bi bi-eye${showPassword ? '-slash' : ''}`}></i>
-                      </button>
-                    </div>
-                  </div>
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 text-red-700 mb-4">
+              <p>{error}</p>
+            </div>
+          )}
 
-                  <div className="d-grid gap-2 mt-5">
-                    <button
-                      type="submit"
-                      style={emsiStyles.button}
-                      className="btn btn-lg text-white"
-                      onMouseOver={(e) => Object.assign(e.currentTarget.style, emsiStyles.buttonHover)}
-                      onMouseOut={(e) => Object.assign(e.currentTarget.style, emsiStyles.button)}
-                    >
-                      Se connecter
-                    </button>
-                  </div>
-                </form>
-              </div>
-              <div className="relative w-full flex items-center justify-center py-4 mt-6">
-                <div className="w-2/5 h-[2px] bg-gray-300"></div>
-                <h3 className="font-lora text-sm px-4 text-gray-500">Ou</h3>
-                <div className="w-2/5 h-[2px] bg-gray-300"></div>
-              </div>
-
-              {/* Boutons tiers */}
-              <div className="w-full flex items-center justify-evenly gap-4 mt-6">
-                {/* Google Login Button */}
-                <div className="p-2 bg-gray-100 cursor-pointer rounded-xl border border-gray-200 hover:bg-gray-200 transition duration-200 ease-in-out">
-                  <button
-                    onClick={handleGoogleLogin}
-                    className="flex items-center bg-red-600 text-white rounded-lg px-4 py-2 space-x-2"
-                  >
-                    <img
-                      src="/src/assets/images/logo-google.png"
-                      alt="google-icon"
-                      className="w-6 md:w-8"
-                    />
-                    <span className="text-md font-semibold">Se connecter avec Google</span>
-                  </button>
+          {/* Login Form */}
+          <form onSubmit={handleLogin} className="p-6 space-y-4">
+            {/* Email Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <AtSign className="h-5 w-5 text-gray-400" />
                 </div>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 transition"
+                  placeholder="votre.email@emsi.ma"
+                />
               </div>
             </div>
-          </div>
+
+            {/* Password Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mot de passe
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 transition"
+                  placeholder="Votre mot de passe"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-green-600"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Login Button */}
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center bg-gradient-to-r from-green-600 to-green-500 text-white py-3 rounded-md hover:opacity-90 transition space-x-2"
+            >
+              <LogIn className="h-5 w-5" />
+              <span>Se connecter</span>
+            </button>
+
+            {/* Divider */}
+            <div className="flex items-center my-4">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="mx-4 text-gray-500 text-sm">Ou</span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            {/* Google Login */}
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center bg-white border border-gray-300 text-gray-700 py-3 rounded-md hover:bg-gray-50 transition space-x-2"
+            >
+              <img
+                src="/src/assets/images/logo-google.png"
+                alt="Google logo"
+                className="h-5 w-5"
+              />
+              <span>Connectez-vous avec Google</span>
+            </button>
+          </form>
         </div>
       </div>
     </div>

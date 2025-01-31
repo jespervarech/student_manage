@@ -35,7 +35,6 @@ const Grade = () => {
     const [students, setStudents] = useState([]);
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const [editingGrade, setEditingGrade] = useState(null);
 
@@ -62,18 +61,7 @@ const Grade = () => {
             const studentsData = await studentsRes.json();
             const coursesData = await coursesRes.json();
 
-            // Log the data to check the structure
-            console.log("Grades Data:", gradesData);
-            console.log("Students Data:", studentsData);
-            console.log("Courses Data:", coursesData);
-
-            // Check that gradesData is an array
-            if (Array.isArray(gradesData)) {
-                setGrades(gradesData);
-            } else {
-                console.error("Les données des notes ne sont pas sous forme de tableau");
-            }
-
+            setGrades(gradesData);
             setStudents(studentsData);
             setCourses(coursesData);
             setLoading(false);
@@ -156,19 +144,9 @@ const Grade = () => {
         setEditingGrade(null);
     };
 
-    const filteredGrades = Array.isArray(grades) ? grades.filter(grade => {
-        const student = students.find(s => s._id === grade.student);
-        const course = courses.find(c => c._id === grade.course);
-
-        return (
-            (student?.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (student?.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (course?.name.toLowerCase().includes(searchTerm.toLowerCase()))
-        );
-    }) : [];
-
-    const averageGrade = filteredGrades.length > 0
-        ? (filteredGrades.reduce((sum, grade) => sum + parseFloat(grade.grade), 0) / filteredGrades.length).toFixed(2)
+    // Afficher toutes les notes sans filtrage
+    const averageGrade = grades.length > 0
+        ? (grades.reduce((sum, grade) => sum + parseFloat(grade.grade), 0) / grades.length).toFixed(2)
         : 0;
 
     return (
@@ -243,15 +221,8 @@ const Grade = () => {
                 </Grid>
             </Grid>
 
-            {/* Actions et Recherche */}
+            {/* Ajouter une note */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                <TextField
-                    variant="outlined"
-                    placeholder="Rechercher des notes"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    sx={{ width: '70%' }}
-                />
                 <Button
                     variant="contained"
                     color="primary"
@@ -275,35 +246,43 @@ const Grade = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredGrades.map((grade) => {
-                            const student = students.find(s => s._id === grade.student);
-                            const course = courses.find(c => c._id === grade.course);
+                        {grades.length > 0 ? (
+                            grades.map((grade) => {
+                                const student = students.find(s => s._id === grade.student);
+                                const course = courses.find(c => c._id === grade.course);
 
-                            return (
-                                <TableRow key={grade._id}>
-                                    <TableCell>
-                                        {student ? `${student.firstName} ${student.lastName}` : 'N/A'}
-                                    </TableCell>
-                                    <TableCell>{course ? course.name : 'N/A'}</TableCell>
-                                    <TableCell>{grade.grade}</TableCell>
-                                    <TableCell>{new Date(grade.date).toLocaleDateString()}</TableCell>
-                                    <TableCell align="right">
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleOpenModal(grade)}
-                                        >
-                                            <Edit size={20} />
-                                        </IconButton>
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDelete(grade._id)}
-                                        >
-                                            <Trash2 size={20} />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
+                                return (
+                                    <TableRow key={grade._id}>
+                                        <TableCell>
+                                            {student ? `${student.firstName} ${student.lastName}` : 'N/A'}
+                                        </TableCell>
+                                        <TableCell>{course ? course.name : 'N/A'}</TableCell>
+                                        <TableCell>{grade.grade}</TableCell>
+                                        <TableCell>{new Date(grade.date).toLocaleDateString()}</TableCell>
+                                        <TableCell align="right">
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleOpenModal(grade)}
+                                            >
+                                                <Edit size={20} />
+                                            </IconButton>
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleDelete(grade._id)}
+                                            >
+                                                <Trash2 size={20} />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={5} align="center">
+                                    Aucune note disponible
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
