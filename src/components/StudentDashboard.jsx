@@ -1,212 +1,129 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
-import 'chart.js/auto';
+import { useUserContext } from '../context/UserContext';
 import {
     GraduationCap,
     BookOpen,
-    Trophy,
-    Users,
-    TrendingUp,
-    Award
+    Star,
+    UserCircle
 } from 'lucide-react';
 
-const ScolariteDashboard = () => {
-    const [stats, setStats] = useState({
-        totalStudents: 0,
-        totalCourses: 0,
-        gradesByCourse: [],
+const StudentDashboard = () => {
+    const [studentData, setStudentData] = useState({
+        student: {},
+        grades: [],
+        averageGrade: 0,
+        totalCourses: 0
     });
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
+    // Utiliser le contexte pour récupérer l'userId
+    const { user } = useUserContext();
     useEffect(() => {
-        const fetchStats = async () => {
+        console.log("useEffect triggered");
+        const fetchStudentStats = async () => {
             try {
-                const response = await axios.get('http://localhost:8010/api/scolarite/stats', {
+
+
+                // Vérifier si userId est disponible
+                if (!user) {
+                    console.error('User ID not found!');
+                    return;
+                }
+
+                // Envoie de la requête avec le userId dans les params
+                const response = await axios.get('http://localhost:8010/api/student/stats', {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
+                    params: { userId: user.id } // `params` permet d'envoyer les données dans la query string
                 });
-                setStats(response.data);
-                setLoading(false);
+
+                setStudentData(response.data);
             } catch (error) {
-                setError('Erreur lors de la récupération des statistiques');
-                setLoading(false);
+                console.error('Error fetching student statistics:', error);
             }
         };
 
-        fetchStats();
-    }, []);
+        // Si userId est défini, on fait la requête API
+        if (user) {
+            fetchStudentStats();
+        }
+    }, [user]); // La requête sera refaite à chaque changement de userId
 
-    // Formatter pour les nombres
-    const formatNumber = (value) => {
-        const num = Number(value);
-        return isNaN(num) ? "0.00" : num.toFixed(2);
-    };
-
-    const barChartData = {
-        labels: stats.gradesByCourse.map(course => course.courseName),
-        datasets: [{
-            label: "Moyenne des Notes",
-            data: stats.gradesByCourse.map(course => Number(course.avgGrade) || 0),
-            backgroundColor: "rgba(54, 162, 235, 0.6)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1
-        }]
-    };
-
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="p-4 bg-red-100 text-red-700 rounded-lg">
-                {error}
-            </div>
-        );
-    }
-
-    const getBadgeColor = (value) => {
-        const numValue = Number(value) || 0;
-        if (numValue >= 16) return 'bg-green-100 text-green-800';
-        if (numValue >= 14) return 'bg-blue-100 text-blue-800';
-        if (numValue >= 12) return 'bg-yellow-100 text-yellow-800';
-        return 'bg-red-100 text-red-800';
-    };
+    const statCards = [
+        {
+            title: "Student Name",
+            value: studentData.student?.firstName || 'N/A', // Utiliser firstName ici
+            icon: UserCircle,
+            colorClass: "text-primary"
+        },
+        {
+            title: "Average Grade",
+            value: studentData.averageGrade?.toFixed(2) || 'N/A',
+            icon: Star,
+            colorClass: "text-success"
+        },
+        {
+            title: "Total Courses",
+            value: studentData.grades.length,
+            icon: BookOpen,
+            colorClass: "text-purple"
+        }
+    ];
 
     return (
-        <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
-            {/* Header */}
-            <div className="flex items-center mb-8">
-                <GraduationCap className="text-blue-600 mr-3" size={32} />
-                <h1 className="text-3xl font-bold text-gray-800">Dashboard Scolarité</h1>
+        <div className="container-fluid p-4">
+            <div className="d-flex align-items-center mb-4">
+                <GraduationCap className="me-2" size={24} />
+                <h1 className="h3 mb-0">My Student Dashboard</h1>
             </div>
 
-            {/* Cartes statistiques */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {/* Total étudiants */}
-                <div className="bg-white p-6 rounded-xl shadow-sm">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h2 className="text-gray-500 text-sm font-semibold">Total Étudiants</h2>
-                            <p className="text-3xl font-bold text-gray-800 mt-2">{stats.totalStudents}</p>
+            <div className="row g-4 mb-4">
+                {statCards.map((stat, index) => (
+                    <div key={index} className="col-12 col-md-4">
+                        <div className="card h-100 shadow-sm">
+                            <div className="card-body">
+                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 className="card-subtitle text-muted">{stat.title}</h6>
+                                    <stat.icon className={`${stat.colorClass}`} size={16} />
+                                </div>
+                                <h2 className="card-title mb-0">
+                                    {stat.value?.toLocaleString() || 'N/A'}
+                                </h2>
+                            </div>
                         </div>
-                        <Users className="text-blue-500" size={24} />
                     </div>
-                </div>
-
-                {/* Total matières */}
-                <div className="bg-white p-6 rounded-xl shadow-sm">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h2 className="text-gray-500 text-sm font-semibold">Total Matières</h2>
-                            <p className="text-3xl font-bold text-gray-800 mt-2">{stats.totalCourses}</p>
-                        </div>
-                        <BookOpen className="text-green-500" size={24} />
-                    </div>
-                </div>
-
-                {/* Meilleure matière */}
-                <div className="bg-white p-6 rounded-xl shadow-sm">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h2 className="text-gray-500 text-sm font-semibold">Meilleure Matière</h2>
-                            <p className="text-3xl font-bold text-gray-800 mt-2">
-                                {stats.gradesByCourse.length > 0
-                                    ? formatNumber(Math.max(...stats.gradesByCourse.map(course => Number(course.avgGrade) || 0)))
-                                    : "N/A"}
-                            </p>
-                        </div>
-                        <Trophy className="text-yellow-500" size={24} />
-                    </div>
-                </div>
+                ))}
             </div>
 
-            {/* Graphique et tableau */}
-            {stats.gradesByCourse.length > 0 ? (
-                <>
-                    {/* Graphique */}
-                    <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-                        <div className="flex items-center mb-4">
-                            <TrendingUp className="text-blue-600 mr-2" size={20} />
-                            <h2 className="text-xl font-semibold text-gray-800">Moyenne par Matière</h2>
-                        </div>
-                        <div className="h-[300px]">
-                            <Bar 
-                                data={barChartData} 
-                                options={{
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'top',
-                                        }
-                                    }
-                                }} 
-                            />
-                        </div>
-                    </div>
-
-                    {/* Tableau */}
-                    <div className="bg-white rounded-xl shadow-sm p-6">
-                        <div className="flex items-center mb-4">
-                            <Award className="text-blue-600 mr-2" size={20} />
-                            <h2 className="text-xl font-semibold text-gray-800">Détails par Matière</h2>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="bg-gray-50">
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matière</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Moyenne</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note Max</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note Min</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Notes</th>
+            <div className="card shadow-sm">
+                <div className="card-body">
+                    <h5 className="card-title mb-3">
+                        <BookOpen className="me-2" size={20} />
+                        My Grades
+                    </h5>
+                    <div className="table-responsive">
+                        <table className="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {studentData.grades?.map((grade, index) => (
+                                    <tr key={index}>
+                                        <td>{grade.course?.name || 'Unknown Course'}</td>
+                                        <td>{grade.grade?.toFixed(2) || 'N/A'}</td>
                                     </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {stats.gradesByCourse.map((course, index) => (
-                                        <tr key={index} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <BookOpen size={16} className="text-gray-400 mr-2" />
-                                                    <span className="text-sm font-medium text-gray-900">{course.courseName}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-3 py-1 rounded-full text-sm ${getBadgeColor(course.avgGrade)}`}>
-                                                    {formatNumber(course.avgGrade)}/20
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(course.maxGrade)}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(course.minGrade)}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
-                                                    {course.totalGrades}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                </>
-            ) : (
-                <div className="text-center py-12">
-                    <BookOpen className="mx-auto text-gray-400 mb-4" size={48} />
-                    <h3 className="text-lg font-medium text-gray-900">Aucune donnée disponible</h3>
-                    <p className="mt-1 text-sm text-gray-500">Les statistiques apparaîtront ici une fois disponibles.</p>
                 </div>
-            )}
+            </div>
         </div>
     );
 };
 
-export default ScolariteDashboard;
+export default StudentDashboard;
