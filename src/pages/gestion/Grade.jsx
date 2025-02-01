@@ -21,7 +21,8 @@ import {
     DialogActions,
     FormControl,
     Select,
-    MenuItem
+    MenuItem,
+    CircularProgress
 } from "@mui/material";
 import {
     BookOpen,
@@ -34,7 +35,7 @@ const Grade = () => {
     const [grades, setGrades] = useState([]);
     const [students, setStudents] = useState([]);
     const [courses, setCourses] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // Indicateur de chargement
     const [openModal, setOpenModal] = useState(false);
     const [editingGrade, setEditingGrade] = useState(null);
 
@@ -94,12 +95,14 @@ const Grade = () => {
             const result = await response.json();
 
             if (editingGrade) {
+                // Update the grade in the state after successful edit
                 setGrades(prev =>
                     prev.map(grade =>
-                        grade._id === result._id ? result : grade
+                        grade._id === result._id ? { ...grade, ...result } : grade
                     )
                 );
             } else {
+                // Add the new grade to the state
                 setGrades(prev => [...prev, result]);
             }
 
@@ -126,8 +129,8 @@ const Grade = () => {
     const handleOpenModal = (grade = null) => {
         setEditingGrade(grade);
         setFormValues(grade ? {
-            student: grade.student,
-            course: grade.course,
+            student: grade.student._id, // Set student ID from grade
+            course: grade.course._id, // Set course ID from grade
             grade: grade.grade,
             date: grade.date
         } : {
@@ -144,10 +147,17 @@ const Grade = () => {
         setEditingGrade(null);
     };
 
-    // Afficher toutes les notes sans filtrage
     const averageGrade = grades.length > 0
         ? (grades.reduce((sum, grade) => sum + parseFloat(grade.grade), 0) / grades.length).toFixed(2)
         : 0;
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        ); // Afficher un spinner pendant le chargement
+    }
 
     return (
         <Box sx={{ p: 3 }}>
@@ -248,8 +258,8 @@ const Grade = () => {
                     <TableBody>
                         {grades.length > 0 ? (
                             grades.map((grade) => {
-                                const student = students.find(s => s._id === grade.student);
-                                const course = courses.find(c => c._id === grade.course);
+                                const student = grade.student; // Student object is embedded in grade
+                                const course = courses.find(c => c._id === grade.course._id);
 
                                 return (
                                     <TableRow key={grade._id}>

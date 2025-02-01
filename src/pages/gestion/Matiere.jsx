@@ -18,8 +18,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
-  DialogContentText
+  DialogActions
 } from "@mui/material";
 import {
   BookOpen,
@@ -34,23 +33,21 @@ const Matiere = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [editingMatiere, setEditingMatiere] = useState(null);
-
-  const [formValues, setFormValues] = useState({
-    name: ""
-  });
+  const [formValues, setFormValues] = useState({ name: "" });
 
   useEffect(() => {
     fetchMatieres();
   }, []);
 
   const fetchMatieres = async () => {
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:8010/api/courses");
       const data = await response.json();
       setMatieres(data);
-      setLoading(false);
     } catch (error) {
-      console.error("Erreur de chargement", error);
+      console.error("Erreur de chargement des matières", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -61,7 +58,6 @@ const Matiere = () => {
       const url = editingMatiere
         ? `http://localhost:8010/api/courses/${editingMatiere._id}`
         : "http://localhost:8010/api/courses";
-
       const method = editingMatiere ? "PUT" : "POST";
 
       const response = await fetch(url, {
@@ -72,19 +68,21 @@ const Matiere = () => {
 
       const result = await response.json();
 
-      if (editingMatiere) {
-        setMatieres(prev =>
-          prev.map(matiere =>
-            matiere._id === result._id ? result : matiere
-          )
-        );
+      if (response.ok) {
+        if (editingMatiere) {
+          setMatieres(prev =>
+            prev.map(matiere => (matiere._id === result._id ? result : matiere))
+          );
+        } else {
+          setMatieres(prev => [...prev, result]);
+        }
+        handleCloseModal();
       } else {
-        setMatieres(prev => [...prev, result]);
+        alert('Erreur lors de l\'enregistrement');
       }
-
-      handleCloseModal();
     } catch (error) {
       console.error("Erreur d'enregistrement", error);
+      alert('Erreur lors de l\'enregistrement');
     }
   };
 
@@ -92,13 +90,18 @@ const Matiere = () => {
     if (!window.confirm("Voulez-vous vraiment supprimer cette matière ?")) return;
 
     try {
-      await fetch(`http://localhost:8010/api/courses/${id}`, {
+      const response = await fetch(`http://localhost:8010/api/courses/${id}`, {
         method: "DELETE"
       });
 
-      setMatieres(prev => prev.filter(matiere => matiere._id !== id));
+      if (response.ok) {
+        setMatieres(prev => prev.filter(matiere => matiere._id !== id));
+      } else {
+        alert('Erreur lors de la suppression');
+      }
     } catch (error) {
       console.error("Erreur de suppression", error);
+      alert('Erreur lors de la suppression');
     }
   };
 
@@ -122,14 +125,7 @@ const Matiere = () => {
       {/* Statistiques */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              bgcolor: '#f0f4c3',
-              borderRadius: 2,
-              transition: 'transform 0.3s',
-              '&:hover': { transform: 'scale(1.05)' }
-            }}
-          >
+          <Card sx={{ bgcolor: '#f0f4c3', borderRadius: 2 }}>
             <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
               <BookOpen size={40} strokeWidth={1.5} style={{ marginRight: 16, color: '#827717' }} />
               <Box>
@@ -144,14 +140,7 @@ const Matiere = () => {
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              bgcolor: '#b2dfdb',
-              borderRadius: 2,
-              transition: 'transform 0.3s',
-              '&:hover': { transform: 'scale(1.05)' }
-            }}
-          >
+          <Card sx={{ bgcolor: '#b2dfdb', borderRadius: 2 }}>
             <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
               <BookOpen size={40} strokeWidth={1.5} style={{ marginRight: 16, color: '#004d40' }} />
               <Box>
@@ -166,14 +155,7 @@ const Matiere = () => {
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              bgcolor: '#ffccbc',
-              borderRadius: 2,
-              transition: 'transform 0.3s',
-              '&:hover': { transform: 'scale(1.05)' }
-            }}
-          >
+          <Card sx={{ bgcolor: '#ffccbc', borderRadius: 2 }}>
             <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
               <BookOpen size={40} strokeWidth={1.5} style={{ marginRight: 16, color: '#bf360c' }} />
               <Box>
@@ -181,9 +163,7 @@ const Matiere = () => {
                   Dernier Ajout
                 </Typography>
                 <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                  {matieres.length > 0
-                    ? matieres[matieres.length - 1].name
-                    : 'N/A'}
+                  {matieres.length > 0 ? matieres[matieres.length - 1].name : 'N/A'}
                 </Typography>
               </Box>
             </CardContent>
