@@ -20,6 +20,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Checkbox,
+    FormControlLabel,
 } from "@mui/material";
 import {
     Users,
@@ -43,7 +45,7 @@ const Etudiant = () => {
         lastName: "",
         age: "",
         email: "",
-        phone: "",
+        telephone: "",
         isActive: true,
     });
 
@@ -306,7 +308,7 @@ const Etudiant = () => {
                                     <TableCell>{student.firstName}</TableCell>
                                     <TableCell>{student.lastName}</TableCell>
                                     <TableCell>{student.email}</TableCell>
-                                    <TableCell>{student.phone}</TableCell>
+                                    <TableCell>{student.telephone}</TableCell>
                                     <TableCell>
                                         <Chip
                                             label={student.isActive ? "Actif" : "Inactif"}
@@ -371,8 +373,9 @@ const Etudiant = () => {
                         />
                         <TextField
                             label="Téléphone"
-                            name="phone"
-                            value={formValues.phone}
+                            name="telephone"
+                            type="tel"
+                            value={formValues.telephone}
                             onChange={handleInputChange}
                             fullWidth
                             required
@@ -385,6 +388,17 @@ const Etudiant = () => {
                             onChange={handleInputChange}
                             fullWidth
                             required
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={formValues.isActive}
+                                    onChange={handleInputChange}
+                                    name="isActive"
+                                    color="primary"
+                                />
+                            }
+                            label="Activer cet étudiant"
                         />
                     </Box>
                 </DialogContent>
