@@ -7,7 +7,7 @@ const Logout = () => {
     const handleLogout = async () => {
         try {
             // Appel à ton API de déconnexion côté serveur
-            const response = await fetch('http://localhost:8010/auth/logout', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
                 method: 'GET', // ou 'POST' selon ton backend
                 headers: {
                     'Content-Type': 'application/json',

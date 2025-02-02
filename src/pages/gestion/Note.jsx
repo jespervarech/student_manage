@@ -53,15 +53,15 @@ const Note = ({ userRole }) => {
 
   const fetchData = async () => {
     try {
-      const notesResponse = await fetch('http://localhost:8010/api/grades');
+      const notesResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/grades`);
       const notesData = await notesResponse.json();
       setNotes(notesData);
 
-      const studentsResponse = await fetch('http://localhost:8010/api/students');
+      const studentsResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/students`);
       const studentsData = await studentsResponse.json();
       setStudents(studentsData);
 
-      const coursesResponse = await fetch('http://localhost:8010/api/courses');
+      const coursesResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/courses`);
       const coursesData = await coursesResponse.json();
       setCourses(coursesData);
     } catch (error) {
@@ -90,7 +90,7 @@ const Note = ({ userRole }) => {
 
     try {
       if (editingNote) {
-        const response = await fetch(`http://localhost:8010/api/grades/${editingNote._id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/grades/${editingNote._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(noteData)
@@ -102,7 +102,7 @@ const Note = ({ userRole }) => {
         );
         setEditingNote(null);
       } else {
-        const response = await fetch('http://localhost:8010/api/grades', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/grades`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(noteData)
@@ -132,7 +132,7 @@ const Note = ({ userRole }) => {
 
   const deleteNote = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8010/api/grades/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/grades/${id}`, {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Failed to delete grade');
