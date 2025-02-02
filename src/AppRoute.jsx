@@ -30,6 +30,7 @@ const AppRoute = createBrowserRouter([
     element:
       <AdminLayout />,
     children: [
+      { path: "profile", element: <Profile /> },
       { path: "homeadmin", element: <AdminDashboard /> },
       { path: "gradesstudents", element: <GradeEtudiant /> },
       { path: "homestudent", element: <StudentDashboard /> },
@@ -37,12 +38,10 @@ const AppRoute = createBrowserRouter([
       { path: "register", element: <Register /> },
       { path: "grades", element: <Grade /> },
       { path: "matiere", element: <Matiere /> },
-      { path: "users", element: <Users /> },
       { path: "settings", element: <Settings /> },
       { path: "etudiants", element: <Etudiant /> },
       { path: "logout", element: <Logout /> },
       { path: "users", element: <Users /> },
-      { path: "profile", element: <Profile /> },
     ],
   },
 
