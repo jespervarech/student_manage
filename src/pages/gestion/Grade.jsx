@@ -53,9 +53,9 @@ const Grade = () => {
     const fetchData = async () => {
         try {
             const [gradesRes, studentsRes, coursesRes] = await Promise.all([
-                fetch("http://localhost:8010/api/grades"),
-                fetch("http://localhost:8010/api/students"),
-                fetch("http://localhost:8010/api/courses")
+                fetch(`${import.meta.env.VITE_API_URL}/api/grades`),
+                fetch(`${import.meta.env.VITE_API_URL}/api/students`),
+                fetch(`${import.meta.env.VITE_API_URL}/api/courses`)
             ]);
 
             const gradesData = await gradesRes.json();
@@ -81,8 +81,8 @@ const Grade = () => {
         e.preventDefault();
         try {
             const url = editingGrade
-                ? `http://localhost:8010/api/grades/${editingGrade._id}`
-                : "http://localhost:8010/api/grades";
+                ? `${import.meta.env.VITE_API_URL}/api/grades/${editingGrade._id}`
+                : `${import.meta.env.VITE_API_URL}/api/grades`;
 
             const method = editingGrade ? "PUT" : "POST";
 
@@ -116,7 +116,7 @@ const Grade = () => {
         if (!window.confirm("Voulez-vous vraiment supprimer cette note ?")) return;
 
         try {
-            await fetch(`http://localhost:8010/api/grades/${id}`, {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/grades/${id}`, {
                 method: "DELETE"
             });
 

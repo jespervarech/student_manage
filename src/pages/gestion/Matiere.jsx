@@ -42,7 +42,7 @@ const Matiere = () => {
   const fetchMatieres = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8010/api/courses");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/courses`);
       const data = await response.json();
       setMatieres(data);
     } catch (error) {
@@ -56,8 +56,8 @@ const Matiere = () => {
     e.preventDefault();
     try {
       const url = editingMatiere
-        ? `http://localhost:8010/api/courses/${editingMatiere._id}`
-        : "http://localhost:8010/api/courses";
+        ? `${import.meta.env.VITE_API_URL}/api/courses/${editingMatiere._id}`
+        : `${import.meta.env.VITE_API_URL}/api/courses`;
       const method = editingMatiere ? "PUT" : "POST";
 
       const response = await fetch(url, {
@@ -90,7 +90,7 @@ const Matiere = () => {
     if (!window.confirm("Voulez-vous vraiment supprimer cette matière ?")) return;
 
     try {
-      const response = await fetch(`http://localhost:8010/api/courses/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/courses/${id}`, {
         method: "DELETE"
       });
 

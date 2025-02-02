@@ -56,7 +56,7 @@ const Etudiant = () => {
 
     const fetchStudents = async () => {
         try {
-            const response = await fetch("http://localhost:8010/api/students");
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/students`);
             const data = await response.json();
             setStudents(data);
             setLoading(false);
@@ -81,8 +81,8 @@ const Etudiant = () => {
 
         try {
             const url = editingStudent
-                ? `http://localhost:8010/api/students/${editingStudent._id}`
-                : "http://localhost:8010/api/students";
+                ? `${import.meta.env.VITE_API_URL}/api/students/${editingStudent._id}`
+                : `${import.meta.env.VITE_API_URL}/api/students`;
 
             const method = editingStudent ? "PUT" : "POST";
 
@@ -119,7 +119,7 @@ const Etudiant = () => {
 
         try {
             const response = await fetch(
-                `http://localhost:8010/api/students/${id}`,
+                `${import.meta.env.VITE_API_URL}/api/students/${id}`,
                 { method: "DELETE" }
             );
             if (response.ok) {

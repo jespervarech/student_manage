@@ -32,7 +32,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:8010/api/users', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -54,7 +54,7 @@ const Users = () => {
     if (!deleteUserId) return;
 
     try {
-      await axios.delete(`http://localhost:8010/api/users/${deleteUserId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/users/${deleteUserId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
