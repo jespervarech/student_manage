@@ -12,7 +12,7 @@ import Grade from "./pages/gestion/Grade";
 import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import Logout from "./pages/auth/Logout";
-import Profile from "./pages/admin/profile";
+import Profile from "./pages/admin/Profile";
 import AdminDashboard from "./components/AdminDashboard";
 import ScolariteDashboard from "./components/ScolariteDashboard";
 import StudentDashboard from "./components/StudentDashboard";

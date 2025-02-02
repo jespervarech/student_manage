@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import { useUserContext } from '../../context/UserContext';  // Importe le contexte utilisateur
 import { Avatar, Typography, Paper, Grid } from '@mui/material';
 
