@@ -11,7 +11,7 @@ const AuthLayout = ({
   onSubtitleLinkClick
 }) => {
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8010/auth/google"; // Redirection vers la route backend
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`; // Redirection vers la route backend
   };
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-b from-indigo-300 via-purple-400 to-blue-500 relative">
@@ -72,7 +72,7 @@ const AuthLayout = ({
               className="flex items-center bg-red-600 text-white rounded-lg px-4 py-2 space-x-2"
             >
               <img
-                src="/src/assets/images/logo-google.png"
+                src="src/assets/images/logo-google.png"
                 alt="google-icon"
                 className="w-6 md:w-8"
               />

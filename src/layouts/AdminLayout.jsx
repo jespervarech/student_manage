@@ -29,6 +29,7 @@ const AdminLayout = () => {
       setUser(userInfo);
 
       // Rediriger vers le dashboard ou une autre page
+
       navigate('/admin/homestudent');
     } else {
       // Si pas de token dans l'URL, vérifier le localStorage pour récupérer les infos de l'utilisateur
