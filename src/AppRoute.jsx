@@ -30,7 +30,7 @@ const AppRoute = createBrowserRouter([
     element:
       <AdminLayout />,
     children: [
-      { path: "profile", element: <Profile /> },
+      { path: "user", element: <Profile /> },
       { path: "homeadmin", element: <AdminDashboard /> },
       { path: "gradesstudents", element: <GradeEtudiant /> },
       { path: "homestudent", element: <StudentDashboard /> },
