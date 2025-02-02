@@ -42,6 +42,7 @@ const AppRoute = createBrowserRouter([
       { path: "etudiants", element: <Etudiant /> },
       { path: "logout", element: <Logout /> },
       { path: "users", element: <Users /> },
+      { path: "profile", element: <Profile /> },
     ],
   },
 
