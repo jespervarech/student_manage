@@ -31,7 +31,7 @@ const StudentDashboard = () => {
                 }
 
                 // Envoie de la requête avec le userId dans les params
-                const response = await axios.get('http://localhost:8010/api/student/stats', {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/student/stats`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
