@@ -150,6 +150,8 @@ const RegisterForm = () => {
       >
         <MenuItem value="STUDENT">Étudiant</MenuItem>
         <MenuItem value="SCOLARITE">SCOLARITE</MenuItem>
+
+        <MenuItem value="ADMIN">ADMIN</MenuItem>
       </TextField>
 
       {formData.role === "STUDENT" && (

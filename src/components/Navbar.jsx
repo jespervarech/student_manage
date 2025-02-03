@@ -44,13 +44,17 @@ const Navbar = () => {
     // Fonction pour déterminer le titre en fonction de l'emplacement
     const getPageTitle = () => {
         switch (location.pathname) {
-            case "/admin/dashboard":
-                return "Dashboard";
+            case "/admin/homeadmin":
+                return "Admin Dashboard";
+            case "/admin/homescolarite":
+                return "Scolarite Dashboard";
+            case "/admin/homestudent":
+                return "Student Dashboard";
             case "/admin/etudiants":
                 return "Étudiants";
-            case "/admin/notes":
+            case "/admin/grades":
                 return "Notes";
-            case "/admin/cours":
+            case "/admin/matiere":
                 return "Cours";
             case "/admin/parametres":
                 return "Paramètres";
