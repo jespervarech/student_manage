@@ -30,7 +30,7 @@ const AdminLayout = () => {
 
       // Rediriger vers le dashboard ou une autre page
 
-      navigate('/admin/' + userInfo.role.toLowerCase());
+      navigate('/admin/homestudent');
     } else {
       // Si pas de token dans l'URL, vérifier le localStorage pour récupérer les infos de l'utilisateur
       const storedUser = localStorage.getItem('user');
